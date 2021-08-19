@@ -23,11 +23,11 @@ public class LorentzFactor extends AppCompatActivity {
 
     Button btn_menu, btn_findLorentzFactor,btn_checkAnswer;
     TextView tv_lorentzFactorResult, tv_practice, tv_practiceResult;
-    ImageView formula;
     View screenView;
     Vibrator vibrator;
     EditText et_inputSpeed, et_inputSpeedPractice, et_inputLorentzFactorPractice;
-    Double inputSpeed, lorentzFactor, inputSpeedPractice,inputLorentzFactorPractice;
+    Double inputSpeed, lorentzFactor, inputSpeedPractice,oldInputSpeedPractice,inputLorentzFactorPractice;
+    int attemptsRemaining;
     final double c=300_000_000;
 
     @Override
@@ -60,6 +60,8 @@ public class LorentzFactor extends AppCompatActivity {
         et_inputSpeed.setHint("Enter Speed in m/s");
         et_inputSpeedPractice.setHint("Enter Speed in m/s");
         et_inputLorentzFactorPractice.setHint("Enter Lorentz Factor(upto four decimals)");
+
+        oldInputSpeedPractice=0.0;
 
         vibrator=(Vibrator)getSystemService(VIBRATOR_SERVICE);
 
@@ -94,6 +96,10 @@ public class LorentzFactor extends AppCompatActivity {
                 else {
                     inputSpeedPractice=Double.parseDouble(et_inputSpeedPractice.getText().toString());
                     inputLorentzFactorPractice=Double.parseDouble(et_inputLorentzFactorPractice.getText().toString());
+                    if(!(inputSpeedPractice.equals(oldInputSpeedPractice))){
+                        oldInputSpeedPractice = inputSpeedPractice;
+                        attemptsRemaining=3;
+                    }
                     checkAnswer(inputSpeedPractice, inputLorentzFactorPractice);
                 }
             }
@@ -147,13 +153,26 @@ public class LorentzFactor extends AppCompatActivity {
                         screenView.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     }
                 },500);
+                attemptsRemaining=3;
+            }
+            else if(attemptsRemaining>1){
+                attemptsRemaining--;
+                tv_practiceResult.setText("Lorentz Factor is Incorrect!\n"+"Remaining Attempts: "+attemptsRemaining);
+                vibrator.vibrate(75);
+                screenView.setBackgroundColor(Color.parseColor("#fac8c9"));
+                Handler handler=new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        screenView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    }
+                },500);
             }
             else{
                 tv_practiceResult.setText("Lorentz Factor is Incorrect!\n"+"Correct Answer: "+lorentzFactorRounded);
                 vibrator.vibrate(75);
                 screenView.setBackgroundColor(Color.parseColor("#fac8c9"));
                 Handler handler=new Handler();
-
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
